@@ -5,3 +5,4 @@ pyotp
 qrcode
 opencv-python-headless
 gevent
+pigpio

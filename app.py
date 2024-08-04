@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from json import load
 from flask import Flask, redirect, render_template, request, Response, session
+from blueprints.led import led
 from config import Config, get_config
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -14,6 +15,7 @@ app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2)
 controller = CameraController()
 config: Config = get_config()
+app.register_blueprint(led)
 
 limiter = Limiter(
     get_remote_address,

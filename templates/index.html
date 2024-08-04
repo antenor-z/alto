@@ -15,6 +15,35 @@
         <button style="font-size: 24px;" onclick="controlCamera('Up')">⯅</button>
         <a href="/logout">Logout</a>
     </div>
+    <div>
+        <input data-jscolor="{ format: 'hex', value: '#000', required: false, palette: '#F00 #0F0 #00F #00FF5F #000', previewPosition: 'right'}" onChange="color(this)">
+    </div>
+
+    <script>
+        function color (e) {
+            const color = e.jscolor.toString('hex').replace("#", "")
+            fetch("/writeColor/" + color)
+        }
+        function setCurrentColor() {
+            const apiUrl = 'currentColor';
+            fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                        throw new Error(`Network response was not ok, status: ${response.status}`);
+                }
+                return response.text()
+            })
+            .then(data => {
+                const c = document.getElementsByTagName("input")[0]
+                c.jscolor.fromString(data)
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        document.addEventListener('DOMContentLoaded', setCurrentColor)
+    </script>
+    <script src="/static/3p/jcolor.min.js"></script>
 
     <script>
         function controlCamera(direction) {
