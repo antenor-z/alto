@@ -1,0 +1,19 @@
+services:
+  proxy:
+    restart: unless-stopped
+    image: nginx
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - /etc/certs:/etc/certs
+    network_mode: "host"
+
+  cam:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    network_mode: "host"
+

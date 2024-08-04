@@ -1,0 +1,7 @@
+Flask
+Flask-Limiter
+gunicorn
+pyotp
+qrcode
+opencv-python-headless
+gevent

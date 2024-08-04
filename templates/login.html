@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+        height: 90vh;
+    }
+    div {
+        display: flex; height: 100%; width: 100%; justify-content: center;
+        align-items: center; text-align: center;
+        form {
+            display: grid;;
+            input {
+                margin-bottom: 10px;
+                font-size: 24px;
+            }
+            label {
+                font-size: 24px;
+                font-family: sans-serif;
+            }
+            button {
+                font-size: 16px;
+            }
+        }
+    }
+</style>
+</head>
+<body>
+    <div>
+        <form style="display: grid;" action="/login" method="post">
+            <label for="user">Username</label>
+            <input type="text" name="user" id="user">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="totp">
+            <label for="totp">TOTP</label>
+            <input type="text" name="totp" id="totp">
+            <button type="submit">OK</button>
+        </form>
+    </div>
+</body>
+</html>

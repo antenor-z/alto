@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Antecam</title>
+</head>
+<body>
+    <img src="{{ url_for('video_feed') }}" width="640" height="480">
+
+    <div> 	 	 	
+        <button style="font-size: 24px;" onclick="controlCamera('Down')">⯆</button>
+        <button style="font-size: 24px;" onclick="controlCamera('Left')">⯇</button>
+        <button style="font-size: 24px;" onclick="controlCamera('Right')">⯈</button>
+        <button style="font-size: 24px;" onclick="controlCamera('Up')">⯅</button>
+        <a href="/logout">Logout</a>
+    </div>
+
+    <script>
+        function controlCamera(direction) {
+            fetch('/control', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'direction=' + direction
+            });
+        }
+    </script>
+</body>
+</html>
