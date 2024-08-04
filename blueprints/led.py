@@ -49,9 +49,9 @@ def fade_color(color_start, color_end):
         )
         time.sleep(1 / 30)
 
-with current_app.app_context():
-    with open("currentColor", "r") as fp:
-        write_color(fp.read())
+# with current_app.app_context():
+#     with open("currentColor", "r") as fp:
+#         write_color(fp.read())
 
 def clean_exit():
     write_color("000000", save = False)
