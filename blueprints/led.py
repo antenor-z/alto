@@ -2,12 +2,25 @@ from flask import Blueprint, current_app
 import pwmControl
 import atexit
 import time
+import os
 led = Blueprint('led', __name__)
 current_color = {"c": [0, 0, 0]}
 
+def get_current_color_from_file():
+    if os.path.exists("currentColor"):
+        with open("currentColor", "r") as fp:
+            color = fp.read().strip()
+            if len(color) == 6 and all(c in "0123456789abcdefABCDEF" for c in color):
+                return [int(color[i:i+2], 16) for i in (0, 2, 4)]
+    return [0, 0, 0]
+
+def write_color_to_file(color):
+    with open("currentColor", "w") as fp:
+        fp.write(color)
+
 @led.get("/currentColor")
 def get_current_color():
-    cc = current_color["c"]
+    cc = get_current_color_from_file()
     return "{:02x}{:02x}{:02x}".format(cc[0], cc[1], cc[2])
 
 @led.get("/writeColor/<string:color>")
@@ -28,8 +41,7 @@ def write_color(color:str, save=True):
     fade_color(current_color["c"], [red, green, blue])
     current_color["c"] = [red, green, blue]
     if save:
-        with open("currentColor", "w") as fp:
-            fp.write(get_current_color())
+        write_color_to_file(color)
 
     return "ok"
 
