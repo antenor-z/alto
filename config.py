@@ -12,6 +12,7 @@ class Config():
     session_key: str
     totp_token: str
     cam_ip: str
+    serial_port: str
 
 def get_config(file: str="config.json") -> Config:
     with open(file) as fp:

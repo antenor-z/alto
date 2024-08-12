@@ -1,5 +1,4 @@
 from flask import Blueprint, current_app
-import pwmControl
 import atexit
 import time
 led = Blueprint('led', __name__)
@@ -40,14 +39,15 @@ def linear(start, end, steps, i):
     return int(start + alpha * i)
 
 def fade_color(color_start, color_end):
-    n_steps = 15
-    for i in range(n_steps):
-        pwmControl.setPWM(
-            linear(color_start[0], color_end[0], n_steps, i),
-            linear(color_start[1], color_end[1], n_steps, i),
-            linear(color_start[2], color_end[2], n_steps, i)
-        )
-        time.sleep(1 / 30)
+    # n_steps = 15
+    # for i in range(n_steps):
+    #     pwmControl.setPWM(
+    #         linear(color_start[0], color_end[0], n_steps, i),
+    #         linear(color_start[1], color_end[1], n_steps, i),
+    #         linear(color_start[2], color_end[2], n_steps, i)
+    #     )
+    #     time.sleep(1 / 30)
+    pass
 
 # with current_app.app_context():
 #     with open("currentColor", "r") as fp:
@@ -55,6 +55,6 @@ def fade_color(color_start, color_end):
 
 def clean_exit():
     write_color("000000", save = False)
-    pwmControl.stop()
+    # pwmControl.stop()
 
 atexit.register(clean_exit)
