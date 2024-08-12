@@ -12,7 +12,7 @@ import threading
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)
 controller = CameraController()
 config: Config = get_config()
 app.register_blueprint(led)

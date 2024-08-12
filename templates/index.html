@@ -4,19 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Antecam</title>
+    <style>
+        img {
+            width: calc(100vw - 20px);
+            max-width: 900px;
+        }
+        div {
+            * {
+                font-size: 24px;
+            }
+            .jscolor {
+                width: 100px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <img src="{{ url_for('video_feed') }}" width="640" height="480">
+    <img src="{{ url_for('video_feed') }}">
 
     <div> 	 	 	
-        <button style="font-size: 24px;" onclick="controlCamera('Down')">⯆</button>
-        <button style="font-size: 24px;" onclick="controlCamera('Left')">⯇</button>
-        <button style="font-size: 24px;" onclick="controlCamera('Right')">⯈</button>
-        <button style="font-size: 24px;" onclick="controlCamera('Up')">⯅</button>
-        <a href="/logout">Logout</a>
-    </div>
-    <div>
-        <input data-jscolor="{ format: 'hex', value: '#000', required: false, palette: '#F00 #0F0 #00F #00FF5F #000', previewPosition: 'right'}" onChange="color(this)">
+        <button onclick="controlCamera('Down')">⬇️</button>
+        <button onclick="controlCamera('Left')">⬅️</button>
+        <button onclick="controlCamera('Right')">➡️</button>
+        <button onclick="controlCamera('Up')">⬆️</button>
+        <input class="jscolor" data-jscolor="{ format: 'hex', value: '#000', required: false, palette: '#F00 #0F0 #00F #00FF5F #000', previewPosition: 'right'}" onChange="color(this)">
+        <button onclick="window.location.href='/logout';">
+            Logout
+        </button>
     </div>
 
     <script>
