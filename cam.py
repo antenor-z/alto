@@ -14,6 +14,7 @@ class CameraController:
         self.cam.login()
 
     def move(self, direction, step=1):
+        self.cam.login()
         if direction == "Left":
             direction = "Right"
             step = 5
