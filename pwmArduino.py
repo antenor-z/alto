@@ -1,9 +1,9 @@
-import serial
+from serial import Serial
 from config import Config, get_config
 
 config: Config = get_config()
 
-ser = serial.Serial(config.serial_port, 115200)
+ser = Serial(config.serial_port, 115200)
 
 def send_color(hex_color):
     if ser.is_open == False:

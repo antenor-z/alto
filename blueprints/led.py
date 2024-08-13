@@ -1,17 +1,18 @@
-from flask import Blueprint, current_app
+from flask import Blueprint
 import atexit
 import time
 import os
 led = Blueprint('led', __name__)
-current_color = {"c": [0, 0, 0]}
+
+from pwmArduino import send_color
 
 def get_current_color_from_file():
     if os.path.exists("currentColor"):
         with open("currentColor", "r") as fp:
             color = fp.read().strip()
             if len(color) == 6 and all(c in "0123456789abcdefABCDEF" for c in color):
-                return [int(color[i:i+2], 16) for i in (0, 2, 4)]
-    return [0, 0, 0]
+                return color
+    return "000000"
 
 def write_color_to_file(color):
     with open("currentColor", "w") as fp:
@@ -19,26 +20,17 @@ def write_color_to_file(color):
 
 @led.get("/currentColor")
 def get_current_color():
-    cc = get_current_color_from_file()
-    return "{:02x}{:02x}{:02x}".format(cc[0], cc[1], cc[2])
+    return get_current_color_from_file()
 
 @led.get("/writeColor/<string:color>")
-def write_color(color:str, save=True):
+def write_color(color: str, save=True):
     if color.startswith("#"):
         color = color[1:]
-    if len(color) != 6:
+    if len(color) != 6 or not all(c in "0123456789abcdefABCDEF" for c in color):
         raise ValueError("Invalid color code")
-    for chr in color:
-        if chr not in "0123456789abcdefABCDEF":
-            raise ValueError("Invalid color code")
 
-    red = int(color[0:2], 16)
-    green = int(color[2:4], 16)
-    blue = int(color[4:6], 16)
-
-    print("RGB values:", red, green, blue)
-    fade_color(current_color["c"], [red, green, blue])
-    current_color["c"] = [red, green, blue]
+    print("Hex color:", color)
+    fade_color(get_current_color(), color)
     if save:
         write_color_to_file(color)
 
@@ -50,23 +42,17 @@ def linear(start, end, steps, i):
     alpha = diff / steps
     return int(start + alpha * i)
 
-def fade_color(color_start, color_end):
-    # n_steps = 15
-    # for i in range(n_steps):
-    #     pwmControl.setPWM(
-    #         linear(color_start[0], color_end[0], n_steps, i),
-    #         linear(color_start[1], color_end[1], n_steps, i),
-    #         linear(color_start[2], color_end[2], n_steps, i)
-    #     )
-    #     time.sleep(1 / 30)
-    pass
-
-# with current_app.app_context():
-#     with open("currentColor", "r") as fp:
-#         write_color(fp.read())
+def fade_color(start_color, end_color):
+    n_steps = 15
+    for i in range(n_steps):
+        r = linear(int(start_color[0:2], 16), int(end_color[0:2], 16), n_steps, i)
+        g = linear(int(start_color[2:4], 16), int(end_color[2:4], 16), n_steps, i)
+        b = linear(int(start_color[4:6], 16), int(end_color[4:6], 16), n_steps, i)
+        send_color("{:02x}{:02x}{:02x}".format(r, g, b))
+        time.sleep(1 / 30)
 
 def clean_exit():
-    write_color("000000", save = False)
-    # pwmControl.stop()
+    write_color("000000", save=False)
 
 atexit.register(clean_exit)
+
