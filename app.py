@@ -29,6 +29,7 @@ app.config['SECRET_KEY'] = config.session_key
 @app.route('/')
 def index():
     try_logged()
+    controller.refresh()
     return render_template('index.html')
 
 @app.route('/video_feed')

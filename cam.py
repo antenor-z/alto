@@ -13,8 +13,11 @@ class CameraController:
         self.cam = DVRIPCam(host_ip, user=config.cam_user, password=config.cam_password)
         self.cam.login()
 
-    def move(self, direction, step=1):
+    def refresh(self):
         self.cam.login()
+
+
+    def move(self, direction, step=1):
         if direction == "Left":
             direction = "Right"
             step = 5
