@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from json import load
 from flask import Flask, redirect, render_template, request, Response, session
 from blueprints.led import led
+from blueprints.temperature import temperature
 from config import Config, get_config
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -10,17 +11,19 @@ from cam import CameraController
 from totp import check2fa
 import threading
 from werkzeug.middleware.proxy_fix import ProxyFix
+from notlogged import try_logged, NotLoggedError
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)
 controller = CameraController()
 config: Config = get_config()
 app.register_blueprint(led)
+app.register_blueprint(temperature)
 
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["100 per hour"],
+    default_limits=["100000 per hour"],
     storage_uri="memory://",
 )
 
@@ -28,19 +31,19 @@ app.config['SECRET_KEY'] = config.session_key
 
 @app.route('/')
 def index():
-    try_logged()
+    try_logged(session)
     thread = threading.Thread(target=controller.refresh)
     thread.start()
     return render_template('index.html')
 
 @app.route('/video_feed')
 def video_feed():
-    try_logged()
+    try_logged(session)
     return Response(generate_frames(rtsp_url=config.RTSP_URL), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/control', methods=['POST'])
 def control():
-    try_logged()
+    try_logged(session)
     direction = request.form.get('direction')
     if direction:
         thread = threading.Thread(target=controller.move, args=(direction,))
@@ -57,13 +60,6 @@ def get_login():
 def logout():
     session.pop("is_logged")
     return redirect("/")
-
-class NotLoggedError(Exception):
-    ...
-
-def try_logged():
-    if session.get("is_logged") != True:
-        raise NotLoggedError
 
 @app.post("/login")
 @limiter.limit("5 per hour")

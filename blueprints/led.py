@@ -1,10 +1,11 @@
-from flask import Blueprint
+from flask import Blueprint, session
+from notlogged import try_logged, NotLoggedError
 import atexit
 import time
 import os
 led = Blueprint('led', __name__)
 
-from pwmArduino import send_color
+from arduinoInterface import send_color
 
 def get_current_color_from_file():
     if os.path.exists("currentColor"):
@@ -25,7 +26,8 @@ def _write_color(color: str, save=True):
         raise ValueError("Invalid color code")
 
     print("Hex color:", color)
-    fade_color(get_current_color(), color)
+    #fade_color(get_current_color(), color)
+    send_color(color)
     if save:
         write_color_to_file(color)
 
@@ -33,10 +35,12 @@ def _write_color(color: str, save=True):
 
 @led.get("/currentColor")
 def get_current_color():
+    try_logged(session)
     return get_current_color_from_file()
 
 @led.get("/writeColor/<string:color>")
 def write_color(color: str):
+    try_logged(session)
     return _write_color(color)
 
 def linear(start, end, steps, i):
@@ -57,7 +61,6 @@ def fade_color(start_color, end_color):
 def clean_exit():
     _write_color("000000", save=False)
 
-write_color(get_current_color_from_file())
-
+_write_color(get_current_color_from_file())
 atexit.register(clean_exit)
 

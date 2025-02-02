@@ -17,20 +17,22 @@
                 width: 100px;
             }
         }
+	#temperature {
+            font-family: sans-serif;
+	}
     </style>
 </head>
 <body>
     <img src="{{ url_for('video_feed') }}">
 
-    <div> 	 	 	
+    <div>
         <button onclick="controlCamera('Down')">⬇️</button>
         <button onclick="controlCamera('Left')">⬅️</button>
         <button onclick="controlCamera('Right')">➡️</button>
         <button onclick="controlCamera('Up')">⬆️</button>
         <input class="jscolor" data-jscolor="{ format: 'hex', value: '#000', required: false, palette: '#F00 #0F0 #00F #00FF5F #000', previewPosition: 'right'}" onChange="color(this)">
-        <button onclick="window.location.href='/logout';">
-            Logout
-        </button>
+        <span id="temperature">Loading...</span>
+        <button onclick="window.location.href='/logout';">Logout</button>
     </div>
 
     <script>
@@ -70,5 +72,24 @@
             });
         }
     </script>
+
+    <script>
+        function fetchTemperature() {
+            fetch('/temperature')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('temperature').innerText = `${data}°C`;
+                })
+                .catch(error => {
+                    console.error('Error fetching temperature:', error);
+                    document.getElementById('temperature').innerText = 'N/D';
+                });
+        }
+	document.addEventListener('DOMContentLoaded', () => {
+            fetchTemperature();
+            setInterval(fetchTemperature, 3000);
+        });
+    </script>
 </body>
 </html>
+
