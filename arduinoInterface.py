@@ -1,6 +1,8 @@
 import time
+import json
 from serial import Serial
 from config import Config, get_config
+from datetime import datetime
 
 config: Config = get_config()
 
@@ -22,21 +24,47 @@ def send_color(hex_color):
 
         print(ser.write(message.encode()))
 
-def get_temperature():
-    if not config.deactivate_serial:
-        if ser.is_open == False:
-            ser.open()
-        
-        message = "T"
 
+CACHE_FILE = "temperature.json"
+
+def read_cache():
+    try:
+        with open(CACHE_FILE, "r") as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {"last_read": 0, "temperature": 0}
+
+def write_cache(data):
+    with open(CACHE_FILE, "w") as file:
+        json.dump(data, file)
+
+def get_temperature():
+    cache = read_cache()
+    current_unix = int(datetime.now().timestamp())
+
+    if not config.deactivate_serial:
+        if current_unix < cache["last_read"] + 3:
+            return cache["temperature"]
+
+        if not ser.is_open:
+            ser.open()
+
+        message = "T"
         ser.write(message.encode())
         time.sleep(0.05)
         temp_str = ser.read_until(expected="\n", size=10).decode()
+
         try:
             temp = float(temp_str) / 10
         except ValueError:
             return 0.0
-        return float(temp_str) / 10
+
+        cache["last_read"] = current_unix
+        cache["temperature"] = temp
+
+        write_cache(cache)
+
+        return temp
 
 if __name__ == "__main__":
     while(True):
