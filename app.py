@@ -3,6 +3,7 @@ from json import load
 from flask import Flask, redirect, render_template, request, Response, session
 from blueprints.led import led
 from blueprints.temperature import temperature
+from blueprints.ac import ac
 from config import Config, get_config
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -19,6 +20,7 @@ controller = CameraController()
 config: Config = get_config()
 app.register_blueprint(led)
 app.register_blueprint(temperature)
+app.register_blueprint(ac)
 
 limiter = Limiter(
     get_remote_address,

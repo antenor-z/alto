@@ -66,6 +66,29 @@ def get_temperature():
 
         return temp
 
+def _write_ac(command):
+    if not config.deactivate_serial:
+        if not ser.is_open:
+            ser.open()
+        ser.write(command[0:4].encode())
+
+def write_ac_temperature(temperature):
+    if isinstance(temperature, int) and 18 <= temperature <= 30:
+        _write_ac("AT" + str(temperature))
+
+def write_ac_fan(speed):
+    if isinstance(speed, int) and speed < 3:
+        _write_ac("AF" + str(speed))
+
+def write_ac_toggle_light():
+    _write_ac("AL")
+
+def write_ac_on():
+    _write_ac("A1")
+
+def write_ac_off():
+    _write_ac("A0")
+
 if __name__ == "__main__":
     while(True):
         last_color = "000000"
@@ -74,4 +97,6 @@ if __name__ == "__main__":
             send_color(to_send[1:])
         elif to_send == "T":
             get_temperature()
+        elif to_send.startswith("A"):
+            _write_ac(to_send)
 

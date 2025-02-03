@@ -17,7 +17,7 @@
                 width: 100px;
             }
         }
-	#temperature {
+	body {
             font-family: sans-serif;
 	}
     </style>
@@ -33,6 +33,21 @@
         <input class="jscolor" data-jscolor="{ format: 'hex', value: '#000', required: false, palette: '#F00 #0F0 #00F #00FF5F #000', previewPosition: 'right'}" onChange="color(this)">
         <span id="temperature">Loading...</span>
         <button onclick="window.location.href='/logout';">Logout</button>
+    </div>
+
+    <div>
+        <h3>Ar condicionado</h3>
+        <button onclick="acControl('/ac/on')">ON</button>
+        <button onclick="acControl('/ac/off')">OFF</button>
+        <button onclick="acControl('/ac/light')">Luz</button>
+	<span style="margin-left: 20px">
+        	<input type="number" id="acTemperature" placeholder="Temp." min="18" max="30" style="width: 100px;">
+        	<button onclick="setACTemperature()">OK</button>
+	</span>
+	<span style="margin-left: 20px">
+        	<input type="number" id="acFanSpeed" placeholder="Vel." min="0" max="2" style="width: 100px">
+        	<button onclick="setACFanSpeed()">OK</button>
+	</span>
     </div>
 
     <script>
@@ -59,6 +74,33 @@
         }
         document.addEventListener('DOMContentLoaded', setCurrentColor)
     </script>
+
+    <script>
+        function acControl(route) {
+            fetch(route)
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('Error sending AC command');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function setACTemperature() {
+            const temp = document.getElementById('acTemperature').value;
+            if (temp) {
+                acControl(`/ac/temperature/${temp}`);
+            }
+        }
+
+        function setACFanSpeed() {
+            const speed = document.getElementById('acFanSpeed').value;
+            if (speed) {
+                acControl(`/ac/fan/${speed}`);
+            }
+        }
+    </script>
+
     <script src="/static/3p/jcolor.min.js"></script>
 
     <script>
