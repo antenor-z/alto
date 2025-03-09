@@ -1,4 +1,4 @@
-workers = 8
+workers = 1
 bind = "0.0.0.0:5001"
 worker_class = 'gevent'
 timeout = 300
