@@ -7,3 +7,4 @@ opencv-python-headless
 gevent
 pigpio
 pyserial
+zeep

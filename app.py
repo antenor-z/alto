@@ -34,8 +34,6 @@ app.config['SECRET_KEY'] = config.session_key
 @app.route('/')
 def index():
     try_logged(session)
-    thread = threading.Thread(target=controller.refresh)
-    thread.start()
     return render_template('index.html')
 
 @app.route('/video_feed')
